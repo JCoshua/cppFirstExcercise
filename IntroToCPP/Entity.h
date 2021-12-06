@@ -1,6 +1,7 @@
 #pragma once
+#include "Actor.h"
 
-class Entity
+class Entity : public Actor
 {
 public:
     Entity();
@@ -16,7 +17,7 @@ public:
     float attack(Entity* entity);
 
     void printStats();
-
+    void draw() override;
 private:
     char m_icon;
     float m_health;

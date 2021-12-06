@@ -1,82 +1,68 @@
-#include <iostream>
+#include "StartScene.h"
+#include "FightScene.h"
 #include "Engine.h"
 
 bool Engine::m_applicationShouldClose = false;
+Scene** Engine::m_scenes;
+int Engine::m_sceneCount;
+int Engine::m_currentSceneIndex;
 
 Engine::Engine()
 {
 	m_applicationShouldClose = false;
-	m_entityCount = 0;
-	m_currentFighterIndex = 0;
 }
+
+Engine::~Engine()
+{
+	delete[] m_scenes;
+}
+
 void Engine::run()
 {
 	start();
 
-	while (!m_applicationShouldClose)
+	while (!getApplicationShouldClose())
 	{
-		update();
 		draw();
+		update();
 	}
 
 	end();
 }
 
+void Engine::addScene(Scene* scene)
+{
+	Scene** tempArray = new Scene* [m_sceneCount + 1];
+
+	for (int i = 0; i < m_sceneCount; i++)
+		tempArray[i] = m_scenes[i];
+
+	tempArray[m_sceneCount] = scene;
+	m_sceneCount++;
+
+	m_scenes = tempArray;
+}
+
 void Engine::start()
 {
-	Entity wompus = Entity('W', 120, 14, 17, 10);
-	Entity thwompus = Entity('T', 130, 17, 10, 7);
-	Entity unclePhil = Entity('U', 150, 15, 20, 5);
-	Entity negaWompus = Entity('M', 100, 17, 14, 12);
-
-	m_entities[0] = { wompus };
-	m_entities[1] = { thwompus };
-	m_entities[2] = { unclePhil };
-	m_entities[3] = { negaWompus };
-	m_entityCount = 4;
-
-	m_currentFighter1 = &m_entities[0];
-	m_currentFighter2 = &m_entities[1];
-	m_currentFighterIndex = 2;
+	StartScene* startScene = new StartScene();
+	addScene(startScene);
+	FightScene* fightScene = new FightScene();
+	addScene(fightScene);
 }
 
 void Engine::update()
 {
-	if (m_currentFighter1->getHealth() <= 0 && m_currentFighterIndex < m_entityCount)
-	{
-		m_currentFighter1 = &m_entities[m_currentFighterIndex];
-		m_currentFighterIndex++;
-	}
-	if (m_currentFighter2->getHealth() <= 0 && m_currentFighterIndex < m_entityCount)
-	{
-		m_currentFighter2 = &m_entities[m_currentFighterIndex];
-		m_currentFighterIndex++;
-	}
-	if (m_currentFighterIndex >= m_entityCount && (m_currentFighter1->getHealth() <= 0 || m_currentFighter2->getHealth() <= 0))
-	{
-		m_applicationShouldClose = true;
-		return;
-	}
+	if (!m_scenes[m_currentSceneIndex]->getStarted())
+		m_scenes[m_currentSceneIndex]->start();
 
-	if (m_currentFighter1->getSpeed() > m_currentFighter2->getSpeed())
-	{
-		m_currentFighter1->attack(m_currentFighter2);
-		m_currentFighter2->attack(m_currentFighter1);
-	}
-	else
-	{
-		m_currentFighter2->attack(m_currentFighter1);
-		m_currentFighter1->attack(m_currentFighter2);
-	}
-	
+	m_scenes[m_currentSceneIndex]->update();
 }
 
 void Engine::draw()
 {
-	m_currentFighter1->printStats();
-	m_currentFighter2->printStats();
-	system("pause");
-	system("cls");
+	m_scenes[m_currentSceneIndex]->draw();
+
 }
 
 void Engine::end()

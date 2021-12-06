@@ -1,22 +1,23 @@
-#include <iostream>
 #include "Entity.h"
+#include <iostream>
 
 Entity::Entity()
 {
-	m_icon = '0';
+	m_icon = '\0';
 	m_health = 0;
 	m_attackPower = 0;
 	m_defensePower = 0;
 	m_speed = 0;
-};
-Entity::Entity(char icon, float Health, float AttackPower, float DefensePower, float Speed)
+}
+
+Entity::Entity(char icon, float health, float attackPower, float defensePower, float speed)
 {
 	m_icon = icon;
-	m_health = Health;
-	m_attackPower = AttackPower;
-	m_defensePower = DefensePower;
-	m_speed = Speed;
-};
+	m_health = health;
+	m_attackPower = attackPower;
+	m_defensePower = defensePower;
+	m_speed = speed;
+}
 
 float Entity::takeDamage(float damageAmount)
 {
@@ -26,6 +27,7 @@ float Entity::takeDamage(float damageAmount)
 		damageTaken = 1;
 
 	m_health -= damageTaken;
+
 	if (m_health <= 0)
 		m_health = 0;
 
@@ -41,7 +43,12 @@ void Entity::printStats()
 {
 	std::cout << m_icon << std::endl;
 	std::cout << "Health: " << getHealth() << std::endl;
-	std::cout << "Attack: " << getAttackPower() << std::endl;
-	std::cout << "Defense: " << getDefensePower() << std::endl;
-	std::cout << "Speed: " << getDefensePower() << std::endl;
+	std::cout << "Attack Power: " << getAttackPower() << std::endl;
+	std::cout << "Defense Power: " << getDefensePower() << std::endl;
+	std::cout << "Speed: " << getSpeed() << std::endl;
+}
+
+void Entity::draw()
+{
+
 }
